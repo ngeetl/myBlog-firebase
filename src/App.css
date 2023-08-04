@@ -1,0 +1,124 @@
+/* Reset */
+* {box-sizing: border-box; font-family: 'Red Hat Display', sans-serif; font-weight: 300;}
+body, h1, h2 {margin: 0; padding: 0;}
+h2 {font-weight: 400; color: rgb(152, 152, 152);}
+a {text-decoration: none; color: black;}
+ul {list-style: none; padding: 0;}
+.container {margin: 50px 60px;} 
+.button {border: none; border-radius: 3px; background-color: rgb(124, 164, 239); color: white;}
+.button:disabled {background-color: rgb(161, 183, 223);}
+.button:disabled:hover {background-color: rgb(161, 183, 223);}
+.button:hover {background-color: rgb(49, 94, 175);}
+.cancel_button {padding: 9px 16px; margin-top: 13px; margin-left: 7px;
+  font-weight: 400; background-color: rgb(207, 74, 74); font-size: 16px;}
+.cancel_button:hover {background-color: rgb(143, 38, 38);}
+.center {width: 1000px; margin: auto;}
+.toast_wrap {border-radius: 5px; font-weight: 800;
+  width: 290px; padding: 20px 0; display: flex; align-items: center; justify-content: center; margin-bottom: 11px;
+  background-color: rgb(246, 188, 188); border: 1px solid rgb(158, 93, 93); color: rgb(158, 93, 93);
+  transition: 1s;}
+button {cursor: pointer;}
+
+/* Layout */
+.nav_bar {background: rgb(37, 107, 204); display: flex; height: 100px; align-items: center;}
+.nav_bar h1 a {width: 20%; margin-left: 40px; color: white; font-weight: 700; font-style: italic;}
+.nav_bar .nav {display: flex; width: 100%; align-items: center; 
+  justify-content: flex-end; margin-right: 20px;}
+.nav_bar .nav a {margin-right: 45px; font-size: 23px; color: rgb(222, 232, 246); transition: .3s;}
+.nav_bar .nav .nav_link:hover {padding-bottom: 3.5px; box-shadow: 0 4px 4px -4px !important;}
+.nav_bar .nav .login {background: rgb(255, 225, 76); border-radius: 4px; padding: 6px 10px;
+  border: none; cursor: pointer; font-size: 16px; margin-right: 20px; font-weight: 500; color: rgb(92, 92, 92);}
+
+/* Pagination */
+.pagination_wrap {text-align: center;}
+.pagination {display: inline-flex; justify-content: center; border: 1px solid rgb(177, 173, 173);
+  border-radius: 3px; margin: auto;}
+.pagination li {padding: 5px 10px; min-width: 50px; text-align: center;
+  transition: all .25s; cursor: pointer; color:rgb(47, 145, 211); font-weight: 500;}
+.pagination li.active {background-color: rgb(47, 145, 211); color: white;}
+.pagination li.active:hover {background-color: rgb(47, 145, 211); color: white; box-shadow: none;}
+.pagination li:not(:last-child) {border-right: 1px solid rgb(177, 173, 173);}
+.pagination li:hover {color: grey; box-shadow: inset 0 0 9px 16px rgba(210, 210, 210, 0.337);}
+
+/* Board - Edit */
+.post_form {margin: 50px;}
+form.center>h3 {color:rgb(204, 204, 204); font-weight: 500; margin: 20px 10px 0 0 ; 
+  font-size: 18px; text-align: end;}
+.post_wrap {
+  display: flex; flex-direction: column; width: 100%; margin-top: 10px;
+}
+.post_wrap label {font-size: 26px; margin: 7px 0;} 
+.post_wrap input {
+  height: 39px; border-radius: 3px; padding: 10px;
+  border: 1px solid rgb(145, 145, 145);
+} 
+.post_wrap textarea {
+  border-radius: 3px; height: 300px; padding: 10px;
+  border: 1px solid rgb(145, 145, 145);
+}
+input:focus, textarea:focus {
+  outline: rgba(0, 139, 255, 0.54) solid 1.5px;
+  box-shadow: 0 0 1px 3px rgba(0, 139, 255, 0.5);
+}
+.post_button_wrap {text-align: end;}
+.post_button_wrap .post_button {padding: 9px 16px; margin-top: 13px;
+  font-weight: 400; color: aliceblue; font-size: 14px;}
+
+/* Blog(Post) */
+.card_header {display: flex; width: 1000px; justify-content: space-between; 
+  align-items: center; margin: 20px auto; padding-right: 10px;} 
+.card_header .add_post {color:rgb(171, 189, 208); font-size: 40px; transition: .2s;}
+.card_header .add_post:hover {scale: 1.15; color:rgb(131, 147, 163);}
+.card_wrap {border: 2px solid rgb(220, 211, 212); border-radius: 5px; width: 1000px;
+  margin: 37px auto; padding: 20px; display: flex; flex-direction: row;
+  justify-content: space-between; align-items: center; cursor: pointer;}
+.card {width: 850px;}
+.card .title {overflow: hidden; height: 22px;}
+.card .post {overflow: hidden; height: 50px;}
+.card_wrap .card_button {height: 32px; width: 60px; background-color: rgb(207, 74, 74); cursor: pointer;}
+small {color:rgb(171, 189, 208);}
+.publish_wrap {margin-top: 12px;}
+
+/* search */
+.search {width: 1000px; display: flex; justify-content: end;}
+.search .search_wrap {width: 280px; border: 1px solid rgb(220, 211, 212); border-radius: 4px;
+  display: flex;}
+.search .search_bar {width: 235px; padding: 9px; border: none; font-size: 15px; border-radius: 4px;}
+.search .search_wrap button {text-align: center; width: 45px; color:rgb(202, 201, 201);
+  padding: 2px; border-left: 1px solid rgb(220, 211, 212); margin: auto;
+  background: transparent; border: none; display: flex; justify-content: center;}
+.search .search_wrap button svg {width: 22px; }
+
+/* ShowPost */
+.showpost {width: 1000px;}
+.showpost_header {position: relative; border-bottom: 1px solid rgb(220, 211, 212); padding-bottom: 10px;}
+.showpost_header .edit_button {position: absolute; right: 2px; color:rgb(120, 135, 151);
+  cursor: pointer;}
+.showpost_body {padding: 30px 6px;}
+.small_wrap {display: flex; justify-content: space-between;}
+
+/* Loading Spinner */
+.spinner {border-radius: 50%; border: 12px silver solid; border-top-color: transparent; width: 90px; height: 90px;
+  margin: 100px auto; animation: spin .8s infinite linear;}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Toast */
+.toasts {position: fixed; bottom: 0; right:0;}
+.toast_suc {background: rgb(192, 216, 236); border: 1px solid rgb(109, 122, 139); color:rgb(109, 117, 139);}
+
+/* Home */
+.home_header {width: 100%;}
+.home_header h2{text-align: center; animation: scaleup 1s forwards; color: rgb(156, 156, 156); font-weight: 300;}
+@keyframes scaleup {
+  100% {
+    transform: scale(1.5);
+  }
+}
+
+/* lottie-files */
+.blogAnimation {width: 600px; margin: auto;}
+.blogAnimation div {width: 100%;}
