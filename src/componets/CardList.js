@@ -5,15 +5,14 @@ import LoadingSpinner from '../componets/LoadingSpinner';
 import Pagination from './Pagination';
 import useToast from '../Hooks/toast';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, orderBy, query, limit, startAfter } from 'firebase/firestore';
 
 const CardList = ({ isAdmin }) => {
     const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
-    const [totalPosts, setTotalPosts]= useState(1);
-    const [loading, setLoading] = useState(false);
+    const [totalPosts, setTotalPosts]= useState(0);
+    const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchText, setSearchText] = useState('');
     const [errMessage, setErrMessage] = useState('');
  
     // Custom Hooks
@@ -21,56 +20,49 @@ const CardList = ({ isAdmin }) => {
 
     useEffect(() => {
       fetchData();
-    }, [])
+    }, []) 
 
-    const fetchData = async () => {
+    const fetchData = async (page = 1) => {
       try {
-        const collectionRef = collection(db, "blog-post")
-        const collectionSnap = await getDocs(collectionRef)
-        const data = collectionSnap.docs.map((doc) => {
+        setLoading(false);
+        const collectionRef = collection(db, "blog-post");
+        
+        // total post
+        let totalQuery = query(collectionRef, orderBy("createdAt", "desc"));
+        const totalDocSnapshots = await getDocs(totalQuery); 
+        let lastDoc;
+        
+        // limit post
+        if (page === 1) {
+          totalQuery = query(collectionRef, orderBy("createdAt", "desc"), limit(5))
+        }
+        if (page > 1) {
+          lastDoc = totalDocSnapshots.docs[(page-1)*5-1];
+          totalQuery = query(collectionRef, orderBy("createdAt", "desc"), limit(5), startAfter(lastDoc))
+        }
+
+        const querySnapshot = await getDocs(totalQuery);
+
+        const data = querySnapshot.docs.map((doc) => {
           const postData = doc.data();
           const postId = doc.id;
-
+          
           return { id: postId, ...postData }
         })
-
+        
         setPosts(data);
+        setCurrentPage(page);
+        setTotalPosts(totalDocSnapshots.size);
       }
       catch (err) {
+        setLoading(false);
         console.log('err is ', err)
       }
     }
 
-
- // post 불러오기 (GET)
-    // const getPosts = (page = 1) => {
-    //   setCurrentPage(page);
-      
-      // axios.get('http://localhost:3100/posts', {
-      //   params: {
-      //     page: page,
-      //     search: searchText
-      //   }
-      // })
-      // .then(res => {
-      //   const { totalPosts, paginatedPosts, publishPost, searchPost } = res.data;
-      //   searchText ? setPosts(searchPost) : setPosts(paginatedPosts);
-      //   setTotalPosts(totalPosts);
-      //   setLoading(false);
-      //   if(!isAdmin) {
-      //     setPosts(publishPost);
-      //   }
-      //   }).catch(err => {
-      //     setErrMessage('서버로부터 불러오는 것을 실패하였습니다.');
-      //     addToast({
-      //       type: 'err',
-      //       message: '서버 접속 실패'
-      //     });
-      //     setLoading(false);
-      //   })
-    // }
-  
-    // useEffect(getPosts, []);
+    const handlePageChange = (page) => {
+      fetchData(page);
+    };
 
     // err 메세지
     if(errMessage) {
@@ -82,20 +74,18 @@ const CardList = ({ isAdmin }) => {
       navigate(`/blog/${id}`);
     }
 
-    const deleteHandler = (e, id) => {
+    const deleteHandler = async (e, id) => {
       e.stopPropagation();
-      // window.confirm('삭제하시겠습니까?') &&
-      // axios.delete(`http://localhost:3100/posts/${id}`)
-      //   .then(() => {
-      //     getPosts(1);
-      //     addToast({type: "success", message: "메세지가 삭제되었습니다."});
-      //   }).catch(err => {
-      //     addToast({
-      //       type: "err",
-      //       message: "오류가 발생하였습니다."
-      //     })
-      //   });
-    } 
+      try {
+        window.confirm('삭제하시겠습니까?') &&
+        await deleteDoc(doc(db, "blog-post", id));
+        addToast({type: "success", message: "메세지가 삭제되었습니다."});
+        fetchData();
+      }
+      catch(err) {
+        addToast({type: "err", message: "오류가 발생하였습니다.", err})
+      }
+    }; 
 
     // post Card rendering
     const renderList = (posts) => {
@@ -122,33 +112,10 @@ const CardList = ({ isAdmin }) => {
           })
         }
 
-    // search API
-    // const onSearch = (e) => {
-    //   if(e.key === 'Enter') {
-    //     getPosts()
-    //   }
-    // }
-
     return (
       <>
-        {/* <div className='search center'>
-          <div className='search_wrap'>
-            <input 
-              className='search_bar'
-              type='text'
-              placeholder='search...'
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              onKeyUp={onSearch}/>
-            <button onClick={() => getPosts()}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-              </svg>    
-            </button>
-          </div>
-        </div> */}
         {renderList(posts)}
-        {/* {totalPosts > 0 && <Pagination totalPosts={totalPosts} getPosts={getPosts} currentPage={currentPage} />} */}
+        {totalPosts > 0 && <Pagination totalPosts={totalPosts} getPosts={handlePageChange} currentPage={currentPage} />}
       </>
     )
 }

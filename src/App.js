@@ -10,15 +10,29 @@ import {
   Navigate
 } from "react-router-dom";
 import { useSelector } from 'react-redux';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useState, useEffect } from 'react';
 
 function App() {
   const { removeToast } = useToast();
   const toasts = useSelector(state => state.toast.toasts);
-  // const isLogin = useSelector(state => state.auth.isLogin);
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const [login, setLogin] = useState(false);
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLogin(true);
+      } else {
+        setLogin(false);
+      }
+    });
+  }, [user]);
+  
   const route = routes.map(route => {
     if(route.auth) {
-        if(true) {
+        if(!login) {
           return <Route key={route.path} path={route.path} element={<Navigate replace to="/" />} />
         }
     }

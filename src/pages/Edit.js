@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import LoadingSpinner from '../componets/LoadingSpinner';
 import { addToast } from '../store/toastSlice';
 import { db } from '../firebase';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const Edit = () => {
     const { id } = useParams();
@@ -18,13 +19,15 @@ const Edit = () => {
     const onChangeTitle = (e) => setEditTitle(e.target.value);
     const onChangeBody = (e) => setEditBody(e.target.value);
     const onKeyUp = e => {
-        if(e.keyCode === 13) {
+        if (e.key === 'Enter' && e.shiftKey) { 
+            return
+        } else if (e.key === 'Enter') { 	  
             submit(e);
         }
     }
 
     const navigate = useNavigate();
-    const submit = (e) => {
+    const submit = async (e) => {
         e.preventDefault();
 
         if(title.length === 0) {
@@ -32,35 +35,47 @@ const Edit = () => {
         } else if(body.length === 0) {
             alert('본문 내용을 입력하세요');
         } else if((title.length > 1) && (body.length > 1)) {
-
-            // axios.patch(`http://localhost:3100/posts/${id}`, {
-            //     title: editTitle,
-            //     body: editBody,
-            //     publish: publish,
-            //     newCreateAt: Date.now(),
-            // }).catch(err => {
-            //     addToast({type: "err", message: "오류가 발생하였습니다."})
-            // });
-            navigate('/blog');
+            try {
+                const docRef = doc(db, "blog-post", id);
+                updateDoc(docRef, {
+                    title: editTitle,
+                    body: editBody
+                })
+                navigate('/blog');
+            }
+            catch(err) {
+                addToast({type: "err", message: "오류가 발생하였습니다."})
+            }
         }
     }
 
     useEffect(() => {
-                // axios.get(`http://localhost:3100/posts/${id}`)
-                //         .then(res => {
-                //             setTitle(res.data.title + '-수정본');
-                //             setBody(res.data.body);
-                //             setLoading(false);
-                //             setPublish(res.data.publish);
-                //         }).catch(err => {
-                //             setLoading(false);
-                //             setErrMessage("서버로부터 불러오는 것을 실패하였습니다.");
-                //             addToast({type: "err", message: "오류가 발생하였습니다."})
-                //         });
-                setEditTitle(title);
-                setEditBody(body);
+               fetchData();
             }, [id, title, body]);
             
+    const fetchData = async () => {
+        try {
+            setLoading(false);
+            const docRef = doc(db, "blog-post", id);
+            const docSnap = await getDoc(docRef);
+    
+            if(docSnap.exists()) {
+                setEditTitle(docSnap.data().title);
+                setEditBody(docSnap.data().body);
+            }else {
+                setLoading(true);
+            }
+            setTitle(docSnap.data().title);
+            setBody(docSnap.data().body);
+
+        }
+        catch(err) {
+            setLoading(false);
+            setErrMessage("서버로부터 불러오는 것을 실패하였습니다.");
+            addToast({type: "err", message: "오류가 발생하였습니다."})
+        }
+    }
+
     if(errMessage) {
         return <div className='center'>{errMessage}</div>
     }

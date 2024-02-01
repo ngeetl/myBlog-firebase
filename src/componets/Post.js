@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useToast from '../Hooks/toast';
+import { db } from '../firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 const Post = () => {
     const navigate = useNavigate();
@@ -14,11 +16,13 @@ const Post = () => {
     const onChangeTitle = e => setTitle(e.target.value);
     const onChangeBody = e => setBody(e.target.value);
     const onKeyUp = e => {
-        if(e.keyCode === 13) {
+        if (e.key === 'Enter' && e.shiftKey) { 
+            return
+        } else if (e.key === 'Enter') { 	  
             submit(e);
         }
-    }
-
+    };
+   
     const onChangePublish = () => {
         publish ? setPublish(false) : setPublish(true);
     };
@@ -30,17 +34,21 @@ const Post = () => {
         setBodyError(false);
 
         if(validateForm()) {
-            // axios.post('http://localhost:3100/posts', {
-            //     title: title,
-            //     body: body,
-            //     publish: publish,
-            //     createAt: Date.now(),
-            // }).then(() => {
-            //     navigate('/admin');
-            //     addToast({type: "success", message: '포스팅이 완료되었습니다.'});
-            // }).catch(err => {
-            //     addToast({type: 'err', message: "오류가 발생하였습니다."})
-            // });
+            const create = async () => {
+                try {
+                    await addDoc(collection(db, "blog-post"), {
+                        title: title,
+                        body: body,
+                        createdAt: serverTimestamp()
+                    });
+                    navigate('/admin');
+                    addToast({type: "success", message: "포스팅이 완료되었습니다."})
+                }
+                catch(err) {
+                    addToast({type: 'err', message: "오류가 발생하였습니다."})
+                }
+            }
+            create();
         }
     }
     

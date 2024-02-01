@@ -13,7 +13,9 @@ const Pagination = ({ totalPosts, getPosts, currentPage }) => {
             {pages.map(page => {
               return(
                 <li 
-                  onClick={() => getPosts(page)}
+                  onClick={() => {
+                    getPosts(page);
+                  }}
                   key={page}
                   className={currentPage === page && 'active'}>
                   {page}
